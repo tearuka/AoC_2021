@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+#read input
+inp = open("inp/input_02.txt").read().splitlines()
+inp_split = [line.split(' ') for line in inp]
+
+
+### Part 1
+
+x = 0
+z = 0
+for line in inp_split:
+    value = int(line[1])
+    if line[0]=='forward':
+        x += value
+    elif line[0]=='down':
+        z += value
+    elif line[0]=='up':
+        z -= value
+res1 = x * z 
+
+print("Result for part 1: ", res1)  # 2150351
+
+
+### Part 2
+
+x = 0
+z = 0
+aim = 0
+for line in inp_split:
+    value = int(line[1])
+    if line[0]=='forward':
+        x += value
+        z += aim * value
+    elif line[0]=='down':
+        aim += value
+    elif line[0]=='up':
+        aim -= value
+res2 = x * z 
+
+print("Result for part 2: ", res2)  # 1842742223
