@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+#read input
+inp = open("inp/input_03.txt").read().splitlines()
+string_length = len(inp[0])
+
+
+def find_common(data,position,most_or_least):
+    suma = 0
+    for line in data:
+        suma += int(line[position])
+    if most_or_least == 'most':
+        return '1' if suma >= len(data)/2 else '0'
+    if most_or_least == 'least':
+        return '1' if suma < len(data)/2 else '0'
+
+
+### Part 1
+
+gamma = []
+epsilon = []
+for position in range(string_length):
+    most = find_common(inp,position,'most')
+    least = find_common(inp,position,'least')
+    gamma.append(most)
+    epsilon.append(least)
+gamma_rate = int(''.join(gamma),2)
+epsilon_rate = int(''.join(epsilon),2)
+
+res1 = gamma_rate * epsilon_rate
+
+print("Result for part 1: ", res1)  # 741950
+
+
+### Part 2
+
+def filter_out(data,most_or_least):
+    inp = data
+    for position in range(string_length):
+        chosen_lines = []
+        least_common = find_common(inp,position,most_or_least)
+        for line in inp:
+            if line[position] == least_common:
+                chosen_lines.append(line)
+        inp = chosen_lines
+        if len(inp) == 1:
+            return inp
+
+oxygen = filter_out(inp,'most')
+oxygen_rate = int(''.join(oxygen),2)
+CO2 = filter_out(inp,'least')
+CO2_rate = int(''.join(CO2),2)
+
+res2 = oxygen_rate * CO2_rate
+
+print("Result for part 2: ", res2)  # 903810
