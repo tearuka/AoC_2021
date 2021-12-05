@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import re
+
+#read input
+inp = open("inp/input_05.txt").read().splitlines()
+
+
+def sum_array(array):
+    suma = 0
+    for line in array:
+        for element in line:
+            if element >= 2:
+                suma += 1
+    return suma
+
+
+def line_crossing(data, n, diagonal):
+
+    arr = [[0 for i in range(n)] for j in range(n)]
+    
+    for line in inp:
+        x1, y1, x2, y2 = re.split(',| -> |,',line)
+        x1, y1, x2, y2 = list(map(lambda x: int(x), [x1, y1, x2, y2]))
+        
+        #vertical lines
+        if x1 == x2:
+            ymin = min(y1, y2)
+            ymax = max(y1, y2)
+            for i in range(ymin, ymax + 1):
+                arr[i][x1] += 1
+                
+    	# horizontal lines
+        elif y1 == y2:
+            xmin = min(x1, x2)
+            xmax = max(x1, x2)
+            for i in range(xmin, xmax+1):
+                arr[y1][i] += 1
+                
+        # diagonal lines
+        elif diagonal == 'yes':
+            if x1 > x2:
+                x = list(reversed(range(x2, x1 + 1)))
+            elif x1 < x2:
+                x = list(range(x1, x2 + 1))
+            if y1 > y2:
+                y = list(reversed(range(y2, y1 + 1)))
+            elif y1 < y2:
+                y = list(range(y1, y2 + 1))
+            for pos in range(len(x)):
+                arr[y[pos]][x[pos]] += 1
+                
+    return sum_array(arr)
+
+
+### Part 1
+
+res1 = line_crossing(inp, 1000, 'no')
+
+print("Result for part 1: ", res1)  # 8350
+
+
+### Part 2
+
+res2 = line_crossing(inp, 1000, 'yes')
+
+print("Result for part 2: ", res2)  # 19374
