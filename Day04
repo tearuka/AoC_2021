@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# read input
+inp = open("inp/input_04.txt").read().split('\n\n')
+
+# parse input
+numbers_drawn = inp[0]
+numbers_drawn = numbers_drawn.split(',')
+numbers_drawn = [int(number) for number in numbers_drawn]
+
+all_boards = inp[1:]
+all_boards = [board.splitlines() for board in all_boards]
+
+
+def sum_board(board):
+    suma = 0
+    for line in board:
+        for element in line:
+            suma += element
+    return suma
+
+
+def squid_bingo(data, first_or_last):
+    
+    list_of_dicts = []
+    board_sum = []
+    for board in all_boards:
+        board = [line.split() for line in board]
+        board = [list(map(int,line)) for line in board]
+    
+        # create a dictionary for each board
+        d = {}
+        for line_pos in range(len(board)):
+            for element_pos in range(len(board[0])):
+                list1 = [line_pos, element_pos]
+                d[board[line_pos][element_pos]] = list1
+        list_of_dicts.append(d)
+    
+        #sum all numbers on each board
+        board_sum.append(sum_board(board))
+    
+    # initialize array for counting the numbers drawn on each board
+    # board 1: row counters (1 to 5) | column counters (1 to 5)
+    arr = [[[0 for i in range(len(data[0]))] for j in range(2)] for k in range(len(data))]
+
+    set_of_boards = set(range(len(data)))
+    
+    # if the number drawn is on the board, increment the counter for its row and column
+    for number in numbers_drawn:
+        for d in list_of_dicts:
+            if number in d:
+                board_index = list_of_dicts.index(d)
+                arr[board_index][0][d[number][0]] += 1
+                arr[board_index][1][d[number][1]] += 1
+                # substract number from board sum
+                board_sum[board_index] -= number
+        
+        # when the counter of a row or a column reaches five --> Bingo!
+        for i in range(len(data)):
+            for j in range(2):
+                for k in range(len(data[0])):
+                    if arr[i][j][k] == 5:
+                        
+                        if first_or_last == 'first':
+                            return board_sum[i] * number
+                        
+                        elif first_or_last == 'last':
+                            if i in set_of_boards:
+                                set_of_boards.remove(i)
+                                if len(set_of_boards) == 0:
+                                    return board_sum[i] * number
+
+
+### Part 1
+
+res1 = squid_bingo(all_boards, 'first')
+
+print("Result for part 1: ", res1)  # 44736
+
+
+### Part 2
+
+res2 = squid_bingo(all_boards, 'last')
+
+print("Result for part 2: ", res2)  # 1827
