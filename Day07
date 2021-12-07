@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+
+#read input
+inp = open("inp/input_07.txt").read().split(',')
+inp = [int(el) for el in inp]
+
+# list "median" 
+inp.sort()
+inp[int(len(inp)/2)]
+
+
+def sum_fuel(position):
+    fuel = 0
+    
+    for step in list(range(1, position + 1)):
+        fuel += step
+        
+    return fuel
+
+
+def crab_fuel(data, start, end, part):
+
+    fuel_sum_fin = float('inf')
+    
+    for position in list(range(start, end)):
+        fuel_sum = 0
+        
+        for number in data:
+            diff = abs(number - position)
+            
+            if part == 1:
+                fuel_sum += diff
+            elif part == 2:
+                fuel_sum += sum_fuel(diff)
+                
+        if fuel_sum < fuel_sum_fin:
+            fuel_sum_fin = fuel_sum
+            
+    return fuel_sum_fin
+    
+    
+### Part 1
+
+res1 = crab_fuel(inp, min(inp), max(inp), 1)
+
+print("Result for part 1: ", res1)  # 325528
+
+
+### Part 2
+
+res2 = crab_fuel(inp, 200, 500, 2)
+
+print("Result for part 2: ", res2)  # 85015836
