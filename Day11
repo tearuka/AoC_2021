@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import copy
+
+#read input
+inp = open("inp/input_11.txt").read().splitlines()
+inp = [list(line) for line in inp]
+inp = [list(map(int, line)) for line in inp]
+
+inp_copy = copy.deepcopy(inp)
+
+xmin, xmax = 0, len(inp[0])
+ymin, ymax = 0, len(inp)
+
+
+def increase_neighbors(data, x, y):
+    xleft, xright = x - 1, x + 1
+    ydown, yup = y + 1, y - 1
+    if xleft >= xmin and yup >= ymin and data[yup][xleft] != 0:
+        data[yup][xleft] += 1
+    if xleft >= xmin and data[y][xleft] != 0:
+        data[y][xleft] += 1
+    if xleft >= xmin and ydown < ymax and data[ydown][xleft] != 0:
+        data[ydown][xleft] += 1
+    if yup >= ymin and data[yup][x] != 0:
+        data[yup][x] += 1
+    if ydown < ymax and data[ydown][x] != 0:
+        data[ydown][x] += 1
+    if xright < xmax and yup >= ymin and data[yup][xright] != 0:
+            data[yup][xright] += 1
+    if xright < xmax and data[y][xright] != 0:
+        data[y][xright] += 1
+    if xright < xmax and ydown < ymax and data[ydown][xright] != 0:
+        data[ydown][xright] += 1
+    return data
+
+def increase_all(data):
+    for y in range(ymax):
+        for x in range(xmax):
+            data[y][x] += 1
+    return data
+
+def is_larger(data):
+    counter = 0
+    for y in range(ymax):
+        for x in range(xmax):
+            if data[y][x] > 9:
+                counter += 1
+    return counter
+
+def check_if_all_shine(data):
+    counter = 0
+    for y in range(ymax):
+        for x in range(xmax):
+            if data[y][x] == 0:
+                counter += 1
+    return counter
+
+def octopus(data, nsteps, part):
+    flashes = 0
+    for step in range(nsteps):
+        if part == 2:
+            if check_if_all_shine(data) == 100:
+                return step
+        increase_all(data)
+        while is_larger(data) > 0:
+            for y in range(ymax):
+                for x in range(xmax):
+                    if data[y][x] > 9:
+                        flashes += 1
+                        data[y][x] = 0
+                        increase_neighbors(data, x, y)
+    if part == 1:
+        return flashes
+
+
+res1 = octopus(inp, 100, 1)
+print('Result for part 1: ', res1)  # 1723
+
+res2 = octopus(inp_copy, 1000, 2)
+print('Result for part 2: ', res2)  # 327
