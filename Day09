@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+from collections import deque
+
+inp = open("inp/input_09.txt").read().splitlines()
+inp = [list(line) for line in inp]
+inp = [list(map(int, line)) for line in inp]
+
+xmin, xmax = 0, len(inp[0])
+ymin, ymax = 0, len(inp)
+
+def check_neighbors(data, x, y):
+    xleft, xright = x - 1, x + 1
+    ydown, yup = y + 1, y - 1
+    score = 0
+    if xleft >= xmin and data[y][x] >= data[y][xleft]:
+        score += 1
+    if yup >= ymin and data[y][x] >= data[yup][x]:
+        score += 1
+    if ydown < ymax and data[y][x] >= data[ydown][x]:
+            score += 1
+    if xright < xmax and data[y][x] >= data[y][xright]:
+        score += 1
+    return score
+
+lista = []
+lowest_points_coordinates = []
+for y in range(ymax):
+    for x in range(xmax):
+        res = check_neighbors(inp, x, y)
+        if res == 0:
+            lista.append(inp[y][x])
+            lowest_points_coordinates.append([y, x])
+
+risk_level = 0
+for element in lista:
+    risk_level += (1 + element)
+res1 = risk_level
+
+print('Result for part 1: ', res1)  # 560
+
+
+def check_neighbors_loc(data, x, y):
+    xleft, xright = x - 1, x + 1
+    ydown, yup = y + 1, y - 1
+    locations = []
+    if xleft >= xmin and data[y][xleft] < 9:
+        locations.append([y, xleft])
+    if yup >= ymin and data[yup][x] < 9:
+        locations.append([yup, x])
+    if ydown < ymax and data[ydown][x] < 9:
+        locations.append([ydown, x])
+    if xright < xmax and data[y][xright] < 9:
+        locations.append([y, xright])
+    return locations
+
+def detect_basin(data, point_coord):
+    queue = deque()
+    locations_visited = []
+    queue.append(point_coord)
+    locations_visited.append(point_coord)
+
+    while queue:
+        item = queue.popleft()
+        locations = check_neighbors_loc(data, item[1], item[0])
+
+        for loc in locations:
+            if loc not in locations_visited:
+                locations_visited.append(loc)
+                queue.append(loc)
+
+    return len(locations_visited
+
+basin_sizes = []
+for point in lowest_points_coordinates:
+    basin_sizes.append(detect_basin(inp, point))
+fin_list = list(reversed(sorted(basin_sizes)))
+res2 = fin_list[0] * fin_list[1] * fin_list[2]
+
+print('Result for part 2: ', res2)  # 959136
