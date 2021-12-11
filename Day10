@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+from collections import deque
+
+inp = open("inp/input_10.txt").read().splitlines()
+inp = [list(line) for line in inp]
+
+opening_brackets = {'{', '[', '<', '('}
+dict_brackets = {'(': ')', '[': ']', '{': '}', '<': '>'}
+dict_points = {')': [3, 1],
+               ']': [57, 2],
+               '}': [1197, 3],
+               '>': [25137, 4]}
+
+def find_corrupted(data):
+    stack = deque()
+    for element in data:
+        if element in opening_brackets:
+            stack.append(element)
+        else:
+            if dict_brackets[stack.pop()] != element:
+                return dict_points[element][0]
+
+def find_incomplete(data):
+    stack = deque()
+    for element in data:
+        if element in opening_brackets:
+            stack.append(element)
+        else:
+            res = stack.pop()
+    return stack
+
+def compute_score(data):
+    score = 0
+    for element in data:
+        score = score * 5
+        score += dict_points[element][1]
+    return score
+
+def bracket_pairs(data, part):
+    suma = 0
+    list_of_scores = []
+    for line in inp:
+        res1 = find_corrupted(line)
+        if isinstance(res1, int):
+            suma += res1
+        else:
+            res = find_incomplete(line)
+            res = list(reversed(list(res)))
+            res = [dict_brackets[element] for element in list(res)]
+            list_of_scores.append(compute_score(res)) 
+
+    sorted_list = sorted(list_of_scores)
+    midpoint = int(len(sorted_list)/2)
+    res2 = sorted_list[midpoint]
+
+    return suma if part == 1 else res2
+
+
+res1 = bracket_pairs(inp, 1)
+print('Result for part 1: ', res1)  # 294195
+
+res2 = bracket_pairs(inp, 2)
+print('Result for part 2: ', res2)  # 3490802734
