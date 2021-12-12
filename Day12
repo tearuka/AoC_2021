@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+inp = open("inp/input_12.txt").read().splitlines()
+inp = [line.split('-') for line in inp]
+
+# format input
+graph = {}
+for line in inp:
+    if line[0] != 'end' and line[1] != 'start':
+        if line[0] not in graph:
+            graph[line[0]] = [line[1]]
+        else:
+            graph[line[0]] += [line[1]]
+    if line[1] != 'end' and line[0] != 'start':
+        if line[1] not in graph:
+            graph[line[1]] = [line[0]]
+        else:
+            graph[line[1]] += [line[0]]
+graph['end'] = []
+
+small_caves = []
+for key in graph.keys():
+    if key.islower() and key not in ('start','end'):
+        small_caves.append(key)
+
+# dictionary for counting the visits to small caves
+dicty = {}
+for cave in small_caves:
+    dicty[cave] = 0
+
+
+## DFS on graph
+## Part 1
+
+def DFS_part1(graph, current_node, path, visited):
+    path.append(current_node)
+    if current_node in small_caves:
+        visited.append(current_node)
+    if current_node == 'end':
+        return 1
+    count = 0
+    for element in graph[current_node]:
+        if element not in visited:
+            count += DFS_part1(graph, element, path.copy(), visited.copy())
+    return count
+
+path_list = []
+res1 = DFS_part1(graph, 'start', [], [])
+print('Result for part 1: ', res1)  # 4378
+
+## Part 2
+
+def DFS_part2(graph, current_node, path, visited, dicty):
+    
+    go_to_recursion = False
+    
+    if current_node not in small_caves:
+        path.append(current_node)
+        go_to_recursion = True
+    
+    elif current_node in small_caves:
+        
+        if dicty[current_node] < 2 and any(value == 2 for value in dicty.values()):
+            visited.append(current_node)
+            dicty[current_node] += 1
+            path.append(current_node)
+        
+        if dicty[current_node] < 2:
+            dicty[current_node] += 1
+            path.append(current_node)
+            go_to_recursion = True
+            if dicty[current_node] == 2:
+                visited.append(current_node)
+        
+    if current_node == 'end':
+        return 1
+    
+    count = 0
+    if go_to_recursion:
+        for element in graph[current_node]:
+            if element not in visited:
+                count += DFS_part2(graph, element, path.copy(), visited.copy(), dicty.copy())
+    return count
+
+
+path_list = []
+res2 = DFS_part2(graph, 'start', [], [], dicty)
+print('Result for part 2: ', res2)  # 133621
