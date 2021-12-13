@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+inp = open("inp/input_13.txt").read()
+dots, instructions = inp.split('\n\n')
+
+instructions = instructions.split('\n')
+instructions = [line.replace('fold along ','').split('=') for line in instructions]
+
+dots = dots.split('\n')
+dots = [line.split(',') for line in dots]
+dots = [list(map(int, line)) for line in dots]
+
+
+def fold(instructions, dots):
+    
+    for instruction in instructions:
+        newdots = []
+        
+        # fold left
+        if instruction[0] == 'x':
+            xfold = int(instruction[1])
+            for dot in dots:
+                if dot[0] > xfold:
+                    diff = dot[0] - xfold
+                    xnew = xfold - diff
+                    newdot = [xnew, dot[1]]
+                else:
+                    newdot = dot
+                if newdot not in newdots:
+                    newdots.append(newdot)
+            
+        # fold upwards    
+        elif instruction[0] == 'y':
+            yfold = int(instruction[1])
+            for dot in dots:
+                if dot[1] > yfold:
+                    diff = dot[1] - yfold
+                    ynew = yfold - diff
+                    newdot = [dot[0], ynew]
+                else:
+                    newdot = dot
+                if newdot not in newdots:
+                    newdots.append(newdot)
+        
+        dots = newdots
+        
+    return dots
+
+
+# part 1
+res1 = len(fold([instructions[0]], dots))
+print('Result for part 1: ', res1)  # 666
+
+
+# part 2
+res2 = fold(instructions, dots)
+# display solution
+xmax = max([row[0] for row in res2])
+ymax = max([row[1] for row in res2])
+arr = [['.' for i in range(xmax + 1)] for j in range(ymax + 1)]
+for dot in res2:
+    arr[dot[1]][dot[0]] = '#'
+print('Result for part 2: ') # the code is CJHAZHKU
+for line in arr:
+    line = ''.join(line)
+    print(line)
